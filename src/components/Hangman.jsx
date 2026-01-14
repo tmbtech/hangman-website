@@ -29,6 +29,7 @@ function Hangman() {
   // Custom word input for multiplayer
   const [customWordInput, setCustomWordInput] = useState('')
   const [customWordError, setCustomWordError] = useState('')
+  const [showWord, setShowWord] = useState(false)
 
   const [word, setWord] = useState('')
   const [guessedLetters, setGuessedLetters] = useState(new Set())
@@ -50,6 +51,7 @@ function Hangman() {
     setGameMode('multi')
     setCustomWordInput('')
     setCustomWordError('')
+    setShowWord(false)
     setGamePhase('setup')
   }, [])
 
@@ -88,6 +90,7 @@ function Hangman() {
     setWrongGuesses(0)
     setCustomWordInput('')
     setCustomWordError('')
+    setShowWord(false)
   }, [])
 
   const playAgain = useCallback(() => {
@@ -99,6 +102,7 @@ function Hangman() {
       // In multiplayer, go back to setup for player 1
       setCustomWordInput('')
       setCustomWordError('')
+      setShowWord(false)
       setGamePhase('setup')
     }
   }, [gameMode, getRandomWord])
@@ -199,7 +203,7 @@ function Hangman() {
               <input
                 type="text"
                 id="customWord"
-                className="custom-word-input secret-text"
+                className={`custom-word-input${showWord ? '' : ' secret-text'}`}
                 value={customWordInput}
                 onChange={(e) => {
                   setCustomWordInput(e.target.value)
@@ -215,6 +219,14 @@ function Hangman() {
                 data-1p-ignore
                 data-form-type="other"
               />
+              <label className="reveal-word-toggle">
+                <input
+                  type="checkbox"
+                  checked={showWord}
+                  onChange={(e) => setShowWord(e.target.checked)}
+                />
+                <span>Reveal word</span>
+              </label>
               {customWordError && (
                 <p className="error-message">{customWordError}</p>
               )}
