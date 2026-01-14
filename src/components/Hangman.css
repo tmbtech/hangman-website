@@ -190,6 +190,20 @@
   color: #aaa;
 }
 
+/* Secret text masking - hides the word from Player 2 without triggering password managers */
+.custom-word-input.secret-text {
+  -webkit-text-security: disc;
+  -moz-text-security: disc;
+  text-security: disc;
+}
+
+/* Fallback for browsers that don't support text-security */
+@supports not (-webkit-text-security: disc) {
+  .custom-word-input.secret-text {
+    font-family: 'text-security-disc', sans-serif;
+  }
+}
+
 .error-message {
   color: #dc3545;
   font-size: 0.9rem;
