@@ -185,37 +185,47 @@ function Hangman() {
               <span>or</span>
             </div>
 
-            <div className="custom-word-section">
+            <form
+              className="custom-word-section"
+              onSubmit={(e) => {
+                e.preventDefault()
+                handleCustomWord()
+              }}
+              autoComplete="off"
+              data-lpignore="true"
+              data-form-type="other"
+            >
               <label htmlFor="customWord">Enter your own word:</label>
               <input
-                type="password"
+                type="text"
                 id="customWord"
-                className="custom-word-input"
+                className="custom-word-input secret-text"
                 value={customWordInput}
                 onChange={(e) => {
                   setCustomWordInput(e.target.value)
                   setCustomWordError('')
                 }}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    handleCustomWord()
-                  }
-                }}
                 placeholder="Type a secret word..."
                 maxLength={20}
                 autoComplete="off"
+                autoCorrect="off"
+                autoCapitalize="off"
+                spellCheck="false"
+                data-lpignore="true"
+                data-1p-ignore
+                data-form-type="other"
               />
               {customWordError && (
                 <p className="error-message">{customWordError}</p>
               )}
               <button
+                type="submit"
                 className="setup-btn use-word"
-                onClick={handleCustomWord}
                 disabled={!customWordInput.trim()}
               >
                 Use This Word
               </button>
-            </div>
+            </form>
           </div>
 
           <button className="back-btn" onClick={goToMenu}>
