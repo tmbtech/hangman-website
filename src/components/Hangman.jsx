@@ -22,20 +22,86 @@ const WORDS = [
 const MAX_WRONG_GUESSES = 6
 
 function Hangman() {
+  // Game phase: 'menu', 'setup' (player 1 enters word), 'playing'
+  const [gamePhase, setGamePhase] = useState('menu')
+  // Game mode: 'single' or 'multi'
+  const [gameMode, setGameMode] = useState(null)
+  // Custom word input for multiplayer
+  const [customWordInput, setCustomWordInput] = useState('')
+  const [customWordError, setCustomWordError] = useState('')
+
   const [word, setWord] = useState('')
   const [guessedLetters, setGuessedLetters] = useState(new Set())
   const [wrongGuesses, setWrongGuesses] = useState(0)
 
-  const startNewGame = useCallback(() => {
-    const randomWord = WORDS[Math.floor(Math.random() * WORDS.length)]
-    setWord(randomWord)
-    setGuessedLetters(new Set())
-    setWrongGuesses(0)
+  const getRandomWord = useCallback(() => {
+    return WORDS[Math.floor(Math.random() * WORDS.length)]
   }, [])
 
-  useEffect(() => {
-    startNewGame()
-  }, [startNewGame])
+  const startSinglePlayer = useCallback(() => {
+    setGameMode('single')
+    setWord(getRandomWord())
+    setGuessedLetters(new Set())
+    setWrongGuesses(0)
+    setGamePhase('playing')
+  }, [getRandomWord])
+
+  const startMultiPlayer = useCallback(() => {
+    setGameMode('multi')
+    setCustomWordInput('')
+    setCustomWordError('')
+    setGamePhase('setup')
+  }, [])
+
+  const handleAutoGenerate = useCallback(() => {
+    setWord(getRandomWord())
+    setGuessedLetters(new Set())
+    setWrongGuesses(0)
+    setGamePhase('playing')
+  }, [getRandomWord])
+
+  const handleCustomWord = useCallback(() => {
+    const cleanedWord = customWordInput.toUpperCase().replace(/[^A-Z]/g, '')
+
+    if (cleanedWord.length < 2) {
+      setCustomWordError('Please enter a word with at least 2 letters')
+      return
+    }
+
+    if (cleanedWord.length > 20) {
+      setCustomWordError('Word must be 20 letters or less')
+      return
+    }
+
+    setWord(cleanedWord)
+    setGuessedLetters(new Set())
+    setWrongGuesses(0)
+    setCustomWordError('')
+    setGamePhase('playing')
+  }, [customWordInput])
+
+  const goToMenu = useCallback(() => {
+    setGamePhase('menu')
+    setGameMode(null)
+    setWord('')
+    setGuessedLetters(new Set())
+    setWrongGuesses(0)
+    setCustomWordInput('')
+    setCustomWordError('')
+  }, [])
+
+  const playAgain = useCallback(() => {
+    if (gameMode === 'single') {
+      setWord(getRandomWord())
+      setGuessedLetters(new Set())
+      setWrongGuesses(0)
+    } else {
+      // In multiplayer, go back to setup for player 1
+      setCustomWordInput('')
+      setCustomWordError('')
+      setGamePhase('setup')
+    }
+  }, [gameMode, getRandomWord])
 
   const handleGuess = useCallback((letter) => {
     if (guessedLetters.has(letter)) return
@@ -47,7 +113,20 @@ function Hangman() {
     }
   }, [word, guessedLetters])
 
+  const maskedWord = word
+    .split('')
+    .map(letter => (guessedLetters.has(letter) ? letter : '_'))
+    .join(' ')
+
+  const isWinner = word && word.split('').every(letter => guessedLetters.has(letter))
+  const isGameOver = wrongGuesses >= MAX_WRONG_GUESSES
+
+  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
+
+  // Handle keyboard input during gameplay
   useEffect(() => {
+    if (gamePhase !== 'playing') return
+
     const handleKeyPress = (e) => {
       const letter = e.key.toUpperCase()
       if (letter.length === 1 && letter >= 'A' && letter <= 'Z') {
@@ -59,21 +138,104 @@ function Hangman() {
 
     window.addEventListener('keydown', handleKeyPress)
     return () => window.removeEventListener('keydown', handleKeyPress)
-  }, [handleGuess])
+  }, [handleGuess, isGameOver, isWinner, gamePhase])
 
-  const maskedWord = word
-    .split('')
-    .map(letter => (guessedLetters.has(letter) ? letter : '_'))
-    .join(' ')
+  // Menu screen
+  if (gamePhase === 'menu') {
+    return (
+      <div className="hangman">
+        <h1>Hangman</h1>
+        <div className="menu-container">
+          <h2>Select Game Mode</h2>
+          <div className="menu-buttons">
+            <button className="menu-btn single-player" onClick={startSinglePlayer}>
+              <span className="menu-icon">👤</span>
+              <span className="menu-text">Single Player</span>
+              <span className="menu-desc">Random word challenge</span>
+            </button>
+            <button className="menu-btn multi-player" onClick={startMultiPlayer}>
+              <span className="menu-icon">👥</span>
+              <span className="menu-text">2 Players</span>
+              <span className="menu-desc">Player 1 sets the word</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
-  const isWinner = word && word.split('').every(letter => guessedLetters.has(letter))
-  const isGameOver = wrongGuesses >= MAX_WRONG_GUESSES
+  // Player 1 setup screen (multiplayer)
+  if (gamePhase === 'setup') {
+    return (
+      <div className="hangman">
+        <h1>Hangman</h1>
+        <div className="setup-container">
+          <h2>Player 1: Set the Word</h2>
+          <p className="setup-instruction">
+            Choose a word for Player 2 to guess. Make sure Player 2 is not looking!
+          </p>
 
-  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
+          <div className="setup-options">
+            <button className="setup-btn auto-generate" onClick={handleAutoGenerate}>
+              <span className="setup-icon">🎲</span>
+              <span>Auto-Generate Word</span>
+            </button>
 
+            <div className="setup-divider">
+              <span>or</span>
+            </div>
+
+            <div className="custom-word-section">
+              <label htmlFor="customWord">Enter your own word:</label>
+              <input
+                type="password"
+                id="customWord"
+                className="custom-word-input"
+                value={customWordInput}
+                onChange={(e) => {
+                  setCustomWordInput(e.target.value)
+                  setCustomWordError('')
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleCustomWord()
+                  }
+                }}
+                placeholder="Type a secret word..."
+                maxLength={20}
+                autoComplete="off"
+              />
+              {customWordError && (
+                <p className="error-message">{customWordError}</p>
+              )}
+              <button
+                className="setup-btn use-word"
+                onClick={handleCustomWord}
+                disabled={!customWordInput.trim()}
+              >
+                Use This Word
+              </button>
+            </div>
+          </div>
+
+          <button className="back-btn" onClick={goToMenu}>
+            ← Back to Menu
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  // Game screen
   return (
     <div className="hangman">
       <h1>Hangman</h1>
+
+      {gameMode === 'multi' && (
+        <div className="player-indicator">
+          Player 2's Turn to Guess
+        </div>
+      )}
 
       <div className="hangman-drawing">
         <svg viewBox="0 0 200 250" className="hangman-svg">
@@ -125,13 +287,13 @@ function Hangman() {
 
       {isWinner && (
         <div className="message win">
-          Congratulations! You won!
+          {gameMode === 'multi' ? 'Player 2 wins!' : 'Congratulations! You won!'}
         </div>
       )}
 
       {isGameOver && (
         <div className="message lose">
-          Game Over! The word was: {word}
+          {gameMode === 'multi' ? 'Player 1 wins!' : 'Game Over!'} The word was: {word}
         </div>
       )}
 
@@ -151,9 +313,14 @@ function Hangman() {
       </div>
 
       {(isGameOver || isWinner) && (
-        <button className="new-game-btn" onClick={startNewGame}>
-          Play Again
-        </button>
+        <div className="end-game-buttons">
+          <button className="new-game-btn" onClick={playAgain}>
+            Play Again
+          </button>
+          <button className="menu-link-btn" onClick={goToMenu}>
+            Change Mode
+          </button>
+        </div>
       )}
 
       <p className="hint">Type a letter or click the buttons to guess!</p>
