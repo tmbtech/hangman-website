@@ -64,12 +64,12 @@ function Hangman() {
   const handleAutoGenerate = useCallback(() => {
     setWord(getRandomWord())
     setRandomWordSelected(true)
-    setShowRandomWord(false)
+    setShowRandomWord(true)
   }, [getRandomWord])
 
   const handlePickNewRandomWord = useCallback(() => {
     setWord(getRandomWord())
-    setShowRandomWord(false)
+    setShowRandomWord(true)
   }, [getRandomWord])
 
   const handleStartWithRandomWord = useCallback(() => {
