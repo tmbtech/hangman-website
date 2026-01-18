@@ -1,23 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
+import { getRandomWordByDifficulty } from '../data/wordList'
 import './Hangman.css'
-
-const WORDS = [
-  'JAVASCRIPT',
-  'REACT',
-  'PROGRAMMING',
-  'DEVELOPER',
-  'COMPUTER',
-  'ALGORITHM',
-  'DATABASE',
-  'FUNCTION',
-  'VARIABLE',
-  'COMPONENT',
-  'WEBSITE',
-  'BROWSER',
-  'KEYBOARD',
-  'SOFTWARE',
-  'HANGMAN'
-]
 
 const MAX_WRONG_GUESSES = 6
 
@@ -26,6 +9,8 @@ function Hangman() {
   const [gamePhase, setGamePhase] = useState('menu')
   // Game mode: 'single' or 'multi'
   const [gameMode, setGameMode] = useState(null)
+  // Difficulty level: 'easy', 'medium', or 'hard'
+  const [difficulty, setDifficulty] = useState('medium')
   // Custom word input for multiplayer
   const [customWordInput, setCustomWordInput] = useState('')
   const [customWordError, setCustomWordError] = useState('')
@@ -38,17 +23,13 @@ function Hangman() {
   const [guessedLetters, setGuessedLetters] = useState(new Set())
   const [wrongGuesses, setWrongGuesses] = useState(0)
 
-  const getRandomWord = useCallback(() => {
-    return WORDS[Math.floor(Math.random() * WORDS.length)]
-  }, [])
-
   const startSinglePlayer = useCallback(() => {
     setGameMode('single')
-    setWord(getRandomWord())
+    setWord(getRandomWordByDifficulty(difficulty))
     setGuessedLetters(new Set())
     setWrongGuesses(0)
     setGamePhase('playing')
-  }, [getRandomWord])
+  }, [difficulty])
 
   const startMultiPlayer = useCallback(() => {
     setGameMode('multi')
@@ -62,15 +43,15 @@ function Hangman() {
   }, [])
 
   const handleAutoGenerate = useCallback(() => {
-    setWord(getRandomWord())
+    setWord(getRandomWordByDifficulty(difficulty))
     setRandomWordSelected(true)
     setShowRandomWord(true)
-  }, [getRandomWord])
+  }, [difficulty])
 
   const handlePickNewRandomWord = useCallback(() => {
-    setWord(getRandomWord())
+    setWord(getRandomWordByDifficulty(difficulty))
     setShowRandomWord(true)
-  }, [getRandomWord])
+  }, [difficulty])
 
   const handleStartWithRandomWord = useCallback(() => {
     setGuessedLetters(new Set())
@@ -115,7 +96,7 @@ function Hangman() {
 
   const playAgain = useCallback(() => {
     if (gameMode === 'single') {
-      setWord(getRandomWord())
+      setWord(getRandomWordByDifficulty(difficulty))
       setGuessedLetters(new Set())
       setWrongGuesses(0)
     } else {
@@ -128,7 +109,7 @@ function Hangman() {
       setWord('')
       setGamePhase('setup')
     }
-  }, [gameMode, getRandomWord])
+  }, [gameMode, difficulty])
 
   const handleGuess = useCallback((letter) => {
     if (guessedLetters.has(letter)) return
@@ -173,6 +154,36 @@ function Hangman() {
       <div className="hangman">
         <h1>Hangman</h1>
         <div className="menu-container">
+          <div className="difficulty-selector">
+            <h3>Select Difficulty</h3>
+            <div className="difficulty-buttons">
+              <button
+                className={`difficulty-btn ${difficulty === 'easy' ? 'active' : ''}`}
+                onClick={() => setDifficulty('easy')}
+              >
+                <span className="difficulty-emoji">🟢</span>
+                <span className="difficulty-label">Easy</span>
+                <span className="difficulty-desc">4-6 letters</span>
+              </button>
+              <button
+                className={`difficulty-btn ${difficulty === 'medium' ? 'active' : ''}`}
+                onClick={() => setDifficulty('medium')}
+              >
+                <span className="difficulty-emoji">🟡</span>
+                <span className="difficulty-label">Medium</span>
+                <span className="difficulty-desc">7-9 letters</span>
+              </button>
+              <button
+                className={`difficulty-btn ${difficulty === 'hard' ? 'active' : ''}`}
+                onClick={() => setDifficulty('hard')}
+              >
+                <span className="difficulty-emoji">🔴</span>
+                <span className="difficulty-label">Hard</span>
+                <span className="difficulty-desc">10+ letters</span>
+              </button>
+            </div>
+          </div>
+
           <h2>Select Game Mode</h2>
           <div className="menu-buttons">
             <button className="menu-btn single-player" onClick={startSinglePlayer}>
@@ -340,6 +351,17 @@ function Hangman() {
   return (
     <div className="hangman">
       <h1>Hangman</h1>
+
+      <div className="game-info">
+        <span className="difficulty-badge">
+          {difficulty === 'easy' && '🟢'}
+          {difficulty === 'medium' && '🟡'}
+          {difficulty === 'hard' && '🔴'}
+          {' '}
+          {difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}
+        </span>
+        <span className="word-length-badge">{word.length} letters</span>
+      </div>
 
       {gameMode === 'multi' && (
         <div className="player-indicator">

@@ -23,6 +23,75 @@
   margin-bottom: 30px;
 }
 
+/* Difficulty Selector Styles */
+.difficulty-selector {
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+.difficulty-selector h3 {
+  color: #555;
+  font-size: 1.3rem;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+.difficulty-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.difficulty-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 25px;
+  border: 3px solid #ddd;
+  background: white;
+  border-radius: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 120px;
+}
+
+.difficulty-btn:hover {
+  border-color: #667eea;
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.difficulty-btn.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-color: #667eea;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+.difficulty-emoji {
+  font-size: 2rem;
+  margin-bottom: 8px;
+}
+
+.difficulty-label {
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.difficulty-desc {
+  font-size: 0.85rem;
+  opacity: 0.8;
+}
+
+.difficulty-btn.active .difficulty-desc {
+  opacity: 0.95;
+}
+
 .menu-buttons {
   display: flex;
   flex-direction: column;
@@ -313,6 +382,35 @@
   color: white;
 }
 
+/* Game Info Badges */
+.game-info {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+}
+
+.difficulty-badge,
+.word-length-badge {
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  display: inline-block;
+}
+
+.difficulty-badge {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.word-length-badge {
+  background: #f8f9fa;
+  color: #555;
+  border: 2px solid #ddd;
+}
+
 /* Player Indicator */
 .player-indicator {
   background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
@@ -478,6 +576,49 @@
 
   .keyboard {
     gap: 5px;
+  }
+
+  .difficulty-selector {
+    margin-bottom: 30px;
+  }
+
+  .difficulty-selector h3 {
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+  }
+
+  .difficulty-buttons {
+    gap: 10px;
+    padding: 0 10px;
+  }
+
+  .difficulty-btn {
+    padding: 15px 20px;
+    min-width: 90px;
+  }
+
+  .difficulty-emoji {
+    font-size: 1.5rem;
+    margin-bottom: 5px;
+  }
+
+  .difficulty-label {
+    font-size: 0.95rem;
+  }
+
+  .difficulty-desc {
+    font-size: 0.75rem;
+  }
+
+  .game-info {
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .difficulty-badge,
+  .word-length-badge {
+    padding: 6px 12px;
+    font-size: 0.8rem;
   }
 
   .menu-buttons {
