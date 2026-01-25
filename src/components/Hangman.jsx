@@ -11,6 +11,8 @@ function Hangman() {
   const [gameMode, setGameMode] = useState(null)
   // Difficulty level: 'easy', 'medium', or 'hard'
   const [difficulty, setDifficulty] = useState('medium')
+  // Keyboard layout: 'abc' or 'qwerty'
+  const [keyboardLayout, setKeyboardLayout] = useState('abc')
   // Custom word input for multiplayer
   const [customWordInput, setCustomWordInput] = useState('')
   const [customWordError, setCustomWordError] = useState('')
@@ -129,7 +131,12 @@ function Hangman() {
   const isWinner = word && word.split('').every(letter => guessedLetters.has(letter))
   const isGameOver = wrongGuesses >= MAX_WRONG_GUESSES
 
-  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
+  const alphabetAbc = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
+  const qwertyRows = [
+    'QWERTYUIOP'.split(''),
+    'ASDFGHJKL'.split(''),
+    'ZXCVBNM'.split('')
+  ]
 
   // Handle keyboard input during gameplay
   useEffect(() => {
@@ -180,6 +187,26 @@ function Hangman() {
                 <span className="difficulty-emoji">🔴</span>
                 <span className="difficulty-label">Hard</span>
                 <span className="difficulty-desc">10+ letters</span>
+              </button>
+            </div>
+          </div>
+
+          <div className="keyboard-layout-selector">
+            <h3>Keyboard Layout</h3>
+            <div className="layout-buttons">
+              <button
+                className={`layout-btn ${keyboardLayout === 'abc' ? 'active' : ''}`}
+                onClick={() => setKeyboardLayout('abc')}
+              >
+                <span className="layout-label">ABC</span>
+                <span className="layout-desc">Alphabetical</span>
+              </button>
+              <button
+                className={`layout-btn ${keyboardLayout === 'qwerty' ? 'active' : ''}`}
+                onClick={() => setKeyboardLayout('qwerty')}
+              >
+                <span className="layout-label">QWERTY</span>
+                <span className="layout-desc">Standard keyboard</span>
               </button>
             </div>
           </div>
@@ -429,19 +456,38 @@ function Hangman() {
         </div>
       )}
 
-      <div className="keyboard">
-        {alphabet.map(letter => (
-          <button
-            key={letter}
-            onClick={() => handleGuess(letter)}
-            disabled={guessedLetters.has(letter) || isGameOver || isWinner}
-            className={`key ${guessedLetters.has(letter)
-              ? (word.includes(letter) ? 'correct' : 'wrong')
-              : ''}`}
-          >
-            {letter}
-          </button>
-        ))}
+      <div className={`keyboard ${keyboardLayout === 'qwerty' ? 'keyboard-qwerty' : ''}`}>
+        {keyboardLayout === 'abc' ? (
+          alphabetAbc.map(letter => (
+            <button
+              key={letter}
+              onClick={() => handleGuess(letter)}
+              disabled={guessedLetters.has(letter) || isGameOver || isWinner}
+              className={`key ${guessedLetters.has(letter)
+                ? (word.includes(letter) ? 'correct' : 'wrong')
+                : ''}`}
+            >
+              {letter}
+            </button>
+          ))
+        ) : (
+          qwertyRows.map((row, rowIndex) => (
+            <div key={rowIndex} className="keyboard-row">
+              {row.map(letter => (
+                <button
+                  key={letter}
+                  onClick={() => handleGuess(letter)}
+                  disabled={guessedLetters.has(letter) || isGameOver || isWinner}
+                  className={`key ${guessedLetters.has(letter)
+                    ? (word.includes(letter) ? 'correct' : 'wrong')
+                    : ''}`}
+                >
+                  {letter}
+                </button>
+              ))}
+            </div>
+          ))
+        )}
       </div>
 
       {(isGameOver || isWinner) && (

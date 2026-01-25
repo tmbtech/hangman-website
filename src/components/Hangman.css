@@ -92,6 +92,70 @@
   opacity: 0.95;
 }
 
+/* Keyboard Layout Selector */
+.keyboard-layout-selector {
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+.keyboard-layout-selector h3 {
+  color: #555;
+  font-size: 1.3rem;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+.layout-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.layout-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 15px 25px;
+  border: 3px solid #ddd;
+  background: white;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 130px;
+}
+
+.layout-btn:hover {
+  border-color: #667eea;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+}
+
+.layout-btn.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-color: #667eea;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.35);
+}
+
+.layout-label {
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.layout-desc {
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+.layout-btn.active .layout-desc {
+  opacity: 0.95;
+}
+
 .menu-buttons {
   display: flex;
   flex-direction: column;
@@ -474,6 +538,22 @@
   margin: 20px 0;
 }
 
+.keyboard-qwerty {
+  flex-direction: column;
+  align-items: center;
+}
+
+.keyboard-row {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.keyboard-row:last-child {
+  margin-bottom: 0;
+}
+
 .key {
   width: 40px;
   height: 40px;
@@ -576,6 +656,37 @@
 
   .keyboard {
     gap: 5px;
+  }
+
+  .keyboard-row {
+    gap: 5px;
+    margin-bottom: 5px;
+  }
+
+  .keyboard-layout-selector {
+    margin-bottom: 30px;
+  }
+
+  .keyboard-layout-selector h3 {
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+  }
+
+  .layout-buttons {
+    gap: 10px;
+  }
+
+  .layout-btn {
+    padding: 12px 18px;
+    min-width: 100px;
+  }
+
+  .layout-label {
+    font-size: 0.95rem;
+  }
+
+  .layout-desc {
+    font-size: 0.75rem;
   }
 
   .difficulty-selector {
